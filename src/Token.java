@@ -2,25 +2,26 @@
  * Created by Rob on 28/07/16.
  */
 public class Token {
-    private TokId tid;		// token identifier
+    private String tid;		// token identifier
     private int line;		// line number on listing
     private int pos;		// character position within line
     private String str;		// actual lexeme character string from scanner
+    private TokMap tokens = new TokMap();
 //	private StRec symbol;		// symbol table entry - used in Pt3 for the Parser, not needed in Pt1
 
-    public Token(TokId t, int ln, int p, String s) {
+    public Token(String t, int ln, int p, String s) {
         tid = t;
         line = ln;
         pos = p;
         str = s;
-        if (tid == TokId.TIDNT) {		// Identifier token could be a reserved keyword in CD16
-            TokId v = checkKeywords(s);			// (match is case-insensitive)
-            if (v != TokId.TIDNT) { tid = v; str = null; }	// if keyword, alter token type
+        if (tid.equals("TIDNT")) {		// Identifier token could be a reserved keyword in CD16
+            String v = checkKeywords(s);			// (match is case-insensitive)
+            if (!v.equals("TIDNT")) { tid = v; str = null; }	// if keyword, alter token type
         }
 //		symbol = null;	// initially null, got from Parser SymTab lookup if TIDNT/TILIT/TFLIT/TSTRG
     }
 
-    public TokId value() { return tid; }
+    public String value() { return tid; }
 
     public int getLn() { return line; }
 
@@ -33,23 +34,23 @@ public class Token {
 //	public void setSymbol(StRec x) {symbol = x; }			// ready for Part 3
 
 
-    private TokId checkKeywords(String s) {
+    private String checkKeywords(String s) {
         s = s.toLowerCase();		// change to lower case before checking
-        if ( s.equals("cd16") )	return TokId.TCD16;
-
-        //**********************************************
-        //	OTHER KEYWORDS CAN BE CHECKED HERE
-        //**********************************************
-
-        return TokId.TIDNT;		// not a Keyword, therefore an <id>
+        String str = tokens.getTokId(s);
+        if (str.equals("")){
+            return "TIDNT";// not a Keyword, therefore an <id>
+        } else{
+            return str;
+        }
     }
-
+    
+    @Override
     public String toString() {		// toString method is only meant to be used for debug printing
-        String s = tid.toString();
+        String s = tid;
         while (s.length() % 6 != 0) s = s + " ";
         s = s +" " + line + " " + pos;
         if (str == null) return s;
-        if (tid != TokId.TUNDF)
+        if (!tid.equals("TUNDF"))
             s += " " + str;
         else {
             s += " ";
@@ -63,10 +64,10 @@ public class Token {
     }
 
     public String shortString() {		// provides a String that may be useful for Part 1 printed output
-        String s = tid.name() + " ";
+        String s = tid + " ";
         if (str == null) return s;
-        if (tid != TokId.TUNDF) {
-            if (tid == TokId.TSTRG)
+        if (!tid.equals("TUNDF")) {
+            if (tid.equals("TSTRG"))
                 s += "\"" + str + "\" ";
             else
                 s += str + " ";

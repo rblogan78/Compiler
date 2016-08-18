@@ -12,6 +12,7 @@ public class InputController {
     private FileReader srcFile = null;
     private BufferedReader reader = null;
     private boolean eofFlag = false;
+    private boolean unflag = false;
     private int currLine = 1;
     private int startLine = 1;
     private int currPos = 0;
@@ -19,7 +20,7 @@ public class InputController {
     private int val = 0;
     private HashMap<String, TokId> tokenMap = new HashMap<>();
     private State state = new State();
-    private static final Set<Integer> delims = new HashSet<Integer>(Arrays.asList(40,41,42,43,44,45,47,37,58,59,91,93,94));
+    private static final Set<Integer> delims = new HashSet<Integer>(Arrays.asList(40,41,42,43,44,45,46,47,37,58,59,91,93,94));
     
     public InputController(FileReader f){
         srcFile = f;
@@ -84,7 +85,11 @@ public class InputController {
         String s = "";
         state.setState(StateEnum.START);
         if(val!=0){
-            state.setState(StateEnum.DELIMITER);
+            if(Character.isLetter(val)){
+                state.setState(StateEnum.IDENT);
+            }else{
+                state.setState(StateEnum.DELIMITER);
+            }
             s = this.stateMachine(val);
             val=0;
         }else{
@@ -128,13 +133,18 @@ public class InputController {
                 t = new Token(TokId.TEOF,startLine,startPos, null);
                 break;
         }
+        
         return t;
     }
     public void printToken(Token prt){
         String s = prt.shortString();
         int length = s.length();
         counter = counter+length;
-        if(counter>60){
+        if(prt.value()==TokId.TUNDF){
+            System.out.println();
+            System.out.print(s);
+            counter=0;
+        }else if(counter>60){
             System.out.println(s);
             counter = 0;
         }else{
@@ -143,7 +153,7 @@ public class InputController {
     }
             
     public String chkNextChar(int value){
-        while(value==32 || value==9){
+        while(Character.isWhitespace(value)){
             value = this.getVal();//find the next non whitespace
         }
         String str = "";
@@ -163,6 +173,9 @@ public class InputController {
             state.setState(StateEnum.EOL);
             currLine++;
             currPos = 0;
+        }else if(value==-1){
+            state.setState(StateEnum.EOF);
+            this.setEof(true);
         }else{
             state.setState(StateEnum.DELIMITER);
             str = this.stateMachine(value);
@@ -175,7 +188,8 @@ public class InputController {
         ArrayList tok = new ArrayList();
         String str = "";
         Boolean isValid = false;
-        while(value!=-1 && value!=10 && value!=32){
+        unflag = false;
+        while(value!=-1 && !Character.isWhitespace(value)){
             switch(state.getState()){
                 case INTEGER:
                     while(state.getState()==StateEnum.INTEGER){
@@ -185,12 +199,10 @@ public class InputController {
                             tok.add((char)value);
                             state.setState(StateEnum.REAL);
                         }else if(value<48 || value>57){//reached a delimiter
-                            //state.setState(StateEnum.DELIMITER);
-                            if(value==32){
+                            if(Character.isWhitespace(value)){
                                 isValid=true;
                                 break;
                             }else{
-                                //state.setState(StateEnum.DELIMITER);
                                 isValid=true;
                                 val=value;
                                 break;
@@ -214,14 +226,15 @@ public class InputController {
                         value = this.getVal();
                         if ((value<48 || value>57) && !isValid){//undefined token
                             state.setState(StateEnum.UNDEF);
-                            tok.add((char)value);
                             break;
-                        }else if((value==13 || value==32) && isValid){
+                        }else if(Character.isWhitespace(value) && isValid){
                             break;
-                        }
-                        else{
+                        }else if(Character.isDigit(value)){
                             tok.add((char)value);
                             isValid = true;
+                        }else{
+                            val = value;
+                            break;
                         }
                     }
                     break;
@@ -236,6 +249,8 @@ public class InputController {
                                     tok.add((char)value);
                                     isValid=true;
                                 }
+                                val=value;
+                                isValid=true;
                                 break;
                             case 62:
                                 value = this.getVal();
@@ -243,6 +258,8 @@ public class InputController {
                                     tok.add((char)value);
                                     isValid=true;
                                 }
+                                val=value;
+                                isValid=true;
                                 break;
                             case 33:
                                 value = this.getVal(); 
@@ -251,6 +268,10 @@ public class InputController {
                                     isValid=true;
                                 }else{
                                     state.setState(StateEnum.UNDEF);
+                                    unflag = true;
+                                    if (!Character.isWhitespace(value)){
+                                        val = value;
+                                    }
                                 }
                                 break;
                             case 61:
@@ -260,6 +281,7 @@ public class InputController {
                                     isValid=true;
                                 }else{
                                     state.setState(StateEnum.UNDEF);
+                                    //unflag = true;
                                 }
                                 break;
                             case 47:
@@ -275,6 +297,7 @@ public class InputController {
                             default:
                                 if(!delims.contains(value)){
                                     state.setState(StateEnum.UNDEF);
+                                    //unflag = true;
                                 }else{
                                     isValid = true;
                                 }
@@ -303,6 +326,7 @@ public class InputController {
                     break;
                 case UNDEF:
                     //do something with the undefined token
+                    System.out.println("It's undefined");
                     break;
                 case COMMENT:
                     //the comment state
@@ -326,6 +350,17 @@ public class InputController {
                 this.setEof(true);
             }
             if(state.getState()==StateEnum.UNDEF){
+                if(unflag){
+                   break;
+                }
+                if(Character.isLetter(value)){
+                    val=value;
+                    break;
+                }
+                while(!Character.isWhitespace(value = this.getVal()) && !delims.contains(value) && !Character.isLetterOrDigit(value)){
+                    tok.add((char)value);
+                }
+                val = value;
                 break;
             }
             if (isValid){

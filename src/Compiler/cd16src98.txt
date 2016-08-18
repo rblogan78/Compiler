@@ -1,0 +1,60 @@
+/--
+/-- CD16 Example Program - Exercise 98
+/--
+/-- This program does not use procedures and so may be useful
+/-- for testing the preliminary versions of your compiler.
+/--
+/-- You will also be able to modify it to have a couple of
+/-- elementary procedures for testing of advanced sections.
+/--
+/-- M. Hannaford
+/-- 05-Aug-2015
+/--
+
+CD16 ex98
+
+constants    size is 500, limit is 32
+
+types
+	XX is x:integer, y:integer end
+	YY is array[size] of XX
+
+arrays	ZZ : YY
+
+main
+	i:integer, j:integer, k:integer
+begin
+
+    for (i << 0; i<size)
+        ZZ[i].x << 1;
+        i << i+1;
+    end
+
+    for (i << 0; i<limit)
+        if (ZZ[i].x != 0)
+            k << 2*i+3;
+            for (j << i+k; j<limit)
+                ZZ[j].x << 0;
+                j << j+k;
+            end
+        end
+        i << i+1;
+    end
+
+    Out << "  ", 2;
+
+    for (k << 1, i << 0; i<size)
+        if (ZZ[i].x == 1)
+            j << 2*i+3;
+            if (j < 100) Out << " "; end
+            if (j <  10) Out << " "; end
+            Out << j;
+            k << k+1;
+            if (k % 10 == 0) Out << Line; end
+        end
+        i << i+1;
+    end
+
+    Out << Line;
+
+end CD16 ex98

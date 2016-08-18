@@ -104,13 +104,13 @@ public class Token {
 				s += " ";
 			return s;
 		}
-		s = "\n" + s;
+		//s = "\n" + s;
 		for (int i=0; i<str.length(); i++) { // output non-printables as ascii codes
 			char ch = str.charAt(i);
 			int j = (int)ch;
 			if (j <= 31 || j >= 127) s += "\\" +j; else s += ch;
 		}
-		s += "\n";
+		//s += "\n";
 		return s;
 	}
 

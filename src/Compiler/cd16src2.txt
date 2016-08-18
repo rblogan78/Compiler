@@ -1,0 +1,53 @@
+/--
+/-- CD16 Example Program
+/--
+/-- This program does not use procedures and so may be useful
+/-- for testing the preliminary versions of your compiler.
+/--
+/-- You will also be able to modify it to have a couple of
+/-- elementary procedures for testing of advanced sections.
+/--
+/--
+/-- M. Hannaford
+/-- 23-Jul-2016
+/--
+
+CD16  ex2
+
+ anidentifierofsignificantlength   
+
+ 0   1  123   123.456   0.45    123,0     123.0056 
+
+  "fairly long string"
+
+  "an extremely long string to test out just how long strings might be"
+
+  <= >= == !=   >>   <<  .  0 0.002  67.55
+
+, ;  [  ]  (  ) :  .  <<   >>
+
+/--  Trying out some lexical errors
+
+#    ?    $
+
+!	/-- ! on its own should be an error
+!!	/--  should be two separate errors since ! delimits a TUNDF token
+
+@#$&&&	/-- should be a single error
+
+
+=    ==	/--  error and a valid token
+
+===	/--  valid token and an error
+
+123abc	/--  what should this be???
+
+
+123.abc
+
+123.456abc
+
+
+#$&&nextid
+
+end CD16 ex2

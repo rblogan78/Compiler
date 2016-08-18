@@ -1,0 +1,1 @@
+constants  xx is 3,  yy is 5,  zz is 12   	/-- new 1.01 syntax

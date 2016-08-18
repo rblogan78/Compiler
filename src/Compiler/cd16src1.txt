@@ -1,0 +1,55 @@
+/--
+/-- CD16 Example Program - Exercise 1
+/--
+/--    This is the standard data file used for
+/--      testing the scanner as it is developed
+/--    As features are implemented they are
+/--      added to the data file.
+/--
+/--	M. Hannaford
+/--	23-Jul-2016
+
+/--     Part 1 - The 31 Keywords
+
+CD16 constants types is arrays main begin end array of func void const integer real boolean
+for repeat until if else In Out Line return not and or xor true false
+
+/--	Part 2 - Multi character operators
+
+<< >> <= >= != ==
+
+/--	Part 3 - Single character operators and delimiters
+
+; [ ] , ( ) + - * / % ^ < >
+
+/--	Part 4 - Some identifers and numeric literals
+
+x  y  z  abc  defgh  beginn 123   456   7  8  9  010   321.44  543.00  0.01  6.005
+
+/--	Part 5 - String Literals
+
+"this is a string"   "this is not a string --- not"
+
+/--	Part 6 - Some example CD16 code
+
+
+CD16 Ex1
+constants  xx is 3,  yy is 5,  zz is 12   	/-- new 1.01 syntax
+types
+	Point is x: integer, y: integer end
+	Polygon is array [zz] of Point
+arrays
+	a:Polygon, b:Polygon
+func f1 (aa:Polygon, bb:Polygon) : boolean
+	cc:integer, dd:integer
+	begin
+		/-- Do something
+		return true;
+	end
+main
+	ee:integer, ff: real
+begin
+		/-- Do something else
+
+end CD16 Ex1
+

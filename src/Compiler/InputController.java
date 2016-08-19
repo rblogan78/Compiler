@@ -20,7 +20,7 @@ public class InputController {
     private int startPos = 0;
     private int val = 0;
     private HashMap<String, TokId> tokenMap = new HashMap<>();
-    private ArrayList<Character> tok = new ArrayList<>();
+    private ArrayList<Character> tok = new ArrayList<Character>();
     private State state = new State();
     private static final Set<Integer> delims = new HashSet<Integer>(Arrays.asList(40,41,42,43,44,45,46,47,37,58,59,91,93,94));
     private File file;
@@ -206,8 +206,7 @@ public class InputController {
     }
     
     public String stateMachine(int value){
-
-        
+        char c;
         String str = "";
         Boolean isValid = false;
         unflag = false;
@@ -215,10 +214,12 @@ public class InputController {
             switch(state.getState()){
                 case INTEGER:
                     while(state.getState()==StateEnum.INTEGER){
-                        tok.add((char)value);
+                        c = (char)value; 
+                        tok.add(c);
                         value = this.getVal();
                         if (value==46){//could be real
-                            tok.add((char)value);
+                            c = (char)value;
+                            tok.add(c);
                             state.setState(StateEnum.REAL);
                         }else if(value<48 || value>57){//reached a delimiter
                             if(Character.isWhitespace(value)){
@@ -234,7 +235,8 @@ public class InputController {
                     break;
                 case IDENT:
                     while(state.getState()==StateEnum.IDENT){
-                        tok.add((char)value);
+                        c = (char)value;
+                        tok.add(c);
                         value = this.getVal();
                         if(!Character.isLetterOrDigit(value)){
                             isValid = true;
@@ -252,7 +254,8 @@ public class InputController {
                         }else if(Character.isWhitespace(value) && isValid){
                             break;
                         }else if(Character.isDigit(value)){
-                            tok.add((char)value);
+                            c = (char)value;
+                            tok.add(c);
                             isValid = true;
                         }else{
                             val = value;
@@ -263,12 +266,14 @@ public class InputController {
                 case DELIMITER:
                     startPos=currPos;
                     if(tok.isEmpty()){
-                        tok.add((char)value);
+                        c = (char)value;
+                        tok.add(c);
                         switch(value){
                             case 60:
                                 value = this.getVal();
                                 if(value==60 || value==61){//look for either another 60 or a 61
-                                    tok.add((char)value);
+                                    c = (char)value;
+                                    tok.add(c);
                                     isValid=true;
                                 }else{
                                     val=value;
@@ -279,7 +284,8 @@ public class InputController {
                             case 62:
                                 value = this.getVal();
                                 if(value==62||value==61){//look for either another 62 or a 61
-                                    tok.add((char)value);
+                                    c = (char)value;
+                                    tok.add(c);
                                     isValid=true;
                                 }else{
                                     val=value;
@@ -290,7 +296,8 @@ public class InputController {
                             case 33:
                                 value = this.getVal(); 
                                 if(value==61){//look for an equals else undef
-                                    tok.add((char)value);
+                                    c = (char)value;
+                                    tok.add(c);
                                     isValid=true;
                                 }else{
                                     state.setState(StateEnum.UNDEF);
@@ -303,7 +310,8 @@ public class InputController {
                             case 61:
                                 value = this.getVal();
                                 if(value==61){//look for another 61 else undef
-                                    tok.add((char)value);
+                                    c = (char)value;
+                                    tok.add(c);
                                     isValid=true;
                                 }else{
                                     state.setState(StateEnum.UNDEF);
@@ -313,7 +321,8 @@ public class InputController {
                             case 47:
                                 value = this.getVal();
                                 if(value==45){
-                                    tok.add((char)value);
+                                    c = (char)value;
+                                    tok.add(c);
                                     state.setState(StateEnum.COMMENT);
                                 }else{
                                     isValid=true;
@@ -337,11 +346,11 @@ public class InputController {
                 case STRING:
                     while(state.getState()==StateEnum.STRING){                   
                         if(value!=34){
-                            tok.add((char)value);                              
+                            c = (char)value;
+                            tok.add(c);                              
                         }
                         value = this.getVal();
                         if(value==34){
-                            //tok.add((char)value);
                             isValid = true;
                             break;
                         }
@@ -360,9 +369,11 @@ public class InputController {
                     value = this.getVal();
                     if(value==45){
                         isValid = true;
-                        tok.add((char)value);
+                        c = (char)value;
+                        tok.add(c);
                         while(((value=this.getVal())!=13) && value!=-1){
-                            tok.add((char)value);
+                            c = (char)value;
+                            tok.add(c);
                         }
                     }
                     break;
@@ -385,7 +396,8 @@ public class InputController {
                     break;
                 }
                 while(!Character.isWhitespace(value = this.getVal()) && !delims.contains(value) && !Character.isLetterOrDigit(value)){
-                    tok.add((char)value);
+                    c = (char)value;
+                    tok.add(c);
                 }
                 val = value;
                 break;

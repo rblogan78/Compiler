@@ -10,7 +10,7 @@ public class Part1 {
     public static void main(String[] args){
         System.out.println("Scanning New File:");
         try{
-            FileReader f = new FileReader("src/Compiler/cd16src2.txt");
+            FileReader f = new FileReader("src/Compiler/"+args[0]);
             InputController sc = new InputController(f);
             
             while(!sc.getEof()){

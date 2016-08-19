@@ -20,6 +20,7 @@ public class InputController {
     private int startPos = 0;
     private int val = 0;
     private HashMap<String, TokId> tokenMap = new HashMap<>();
+    private ArrayList<Character> tok = new ArrayList<>();
     private State state = new State();
     private static final Set<Integer> delims = new HashSet<Integer>(Arrays.asList(40,41,42,43,44,45,46,47,37,58,59,91,93,94));
     private File file;
@@ -206,7 +207,7 @@ public class InputController {
     
     public String stateMachine(int value){
 
-        ArrayList tok = new ArrayList();
+        
         String str = "";
         Boolean isValid = false;
         unflag = false;
@@ -394,6 +395,7 @@ public class InputController {
             }
         }
         str = this.parseString(tok);
+        tok.clear();
         return str;
     }
     

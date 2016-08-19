@@ -10,12 +10,9 @@ public class Part1 {
     public static void main(String[] args){
         System.out.println("Scanning New File:");
         try{
-            FileReader f = new FileReader("src/Compiler/cd16src98.txt");
+            FileReader f = new FileReader("src/Compiler/cd16src2.txt");
             InputController sc = new InputController(f);
-            File file = new File("P1Output.txt");
-            PrintWriter l = new PrintWriter(file);
-            StringBuffer buff = new StringBuffer();
-            OutputController out = new OutputController(l,buff);
+            
             while(!sc.getEof()){
                 Token t = sc.getToken();
                 if(t!=null){
@@ -25,6 +22,7 @@ public class Part1 {
                     t = sc.getToken();
                 }
             }
+            sc.closeWriter();
         } catch(FileNotFoundException e){
             System.out.println(e);
         }

@@ -13,6 +13,7 @@ public class InputController {
     private BufferedReader reader = null;
     private boolean eofFlag = false;
     private boolean unflag = false;
+    private boolean d  = false;
     private int currLine = 1;
     private int startLine = 1;
     private int currPos = 0;
@@ -21,8 +22,21 @@ public class InputController {
     private HashMap<String, TokId> tokenMap = new HashMap<>();
     private State state = new State();
     private static final Set<Integer> delims = new HashSet<Integer>(Arrays.asList(40,41,42,43,44,45,46,47,37,58,59,91,93,94));
+    private File file;
+    private PrintWriter l;
+    private StringBuffer buff;
+    private OutputController out;
     
-    public InputController(FileReader f){
+        public InputController(FileReader f){
+        file = new File("P1Output.txt");
+        try{
+            l = new PrintWriter(file);
+        }catch(FileNotFoundException e){
+            System.out.println(e);
+        }
+        buff = new StringBuffer();
+        out = new OutputController(l,buff);
+        
         srcFile = f;
         reader = new BufferedReader(srcFile);
         tokenMap.put("cd16", TokId.TCD16);
@@ -79,10 +93,14 @@ public class InputController {
         tokenMap.put("^", TokId.TCART);
         tokenMap.put("!=", TokId.TNEQL);
     }
-    
+    public void closeWriter(){
+        l.close();
+    }
+        
     public Token getToken(){
         Token t = null;
         String s = "";
+
         state.setState(StateEnum.START);
         if(val!=0){
             if(Character.isLetter(val)){
@@ -91,7 +109,9 @@ public class InputController {
                 state.setState(StateEnum.DELIMITER);
             }
             s = this.stateMachine(val);
-            val=0;
+            if(!d){
+                val=0;
+            }
         }else{
             s = chkNextChar(this.getVal());
         }
@@ -128,12 +148,13 @@ public class InputController {
                 break;
             case UNDEF:
                 t = new Token(TokId.TUNDF,startLine,startPos, s);
+                out.setError("^illegal symbol "+s);
                 break;
             case EOF:
                 t = new Token(TokId.TEOF,startLine,startPos, null);
                 break;
         }
-        
+        d = false;
         return t;
     }
     public void printToken(Token prt){
@@ -248,18 +269,22 @@ public class InputController {
                                 if(value==60 || value==61){//look for either another 60 or a 61
                                     tok.add((char)value);
                                     isValid=true;
+                                }else{
+                                    val=value;
+                                    d = true;
+                                    isValid=true;
                                 }
-                                val=value;
-                                isValid=true;
                                 break;
                             case 62:
                                 value = this.getVal();
                                 if(value==62||value==61){//look for either another 62 or a 61
                                     tok.add((char)value);
                                     isValid=true;
+                                }else{
+                                    val=value;
+                                    d=true;
+                                    isValid=true;
                                 }
-                                val=value;
-                                isValid=true;
                                 break;
                             case 33:
                                 value = this.getVal(); 
@@ -300,6 +325,7 @@ public class InputController {
                                     //unflag = true;
                                 }else{
                                     isValid = true;
+                                    val=0;
                                 }
                                 break;
                         }
@@ -389,6 +415,7 @@ public class InputController {
         try{
             v = reader.read();
             currPos++;
+            out.printChar((char)v);
         }catch (IOException e){
             System.out.println(e);
         }

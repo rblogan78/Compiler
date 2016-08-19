@@ -1,7 +1,8 @@
 package Compiler;
 
 /**
- * Created by Rob on 28/07/16.
+ * @author Mike Hannaford
+ * the class has not been altered from the original
  */
 public enum TokId {
     TEOF,   // End of File Token

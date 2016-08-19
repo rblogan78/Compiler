@@ -3,7 +3,9 @@ package Compiler;
 import java.io.*;
 
 /**
- * Created by Rob on 28/07/16.
+ * @author Robert Logan C3165020 on 28/07/16.
+ * the Class is the main driver for the project and calls
+ * the InputController object(Scanner) to begin scanning characters
  */
 public class Part1 {
     

@@ -1,7 +1,8 @@
 package Compiler;
 
 /**
- * Created by Rob on 28/07/16.
+ * @author Mike Hannaford
+ *  This class has been slightly altered from the original
  */
 public class Token {
 

@@ -1,7 +1,9 @@
 package Compiler;
 
 /**
- * @author Robert Logan on 28/07/16.
+ * @author Mike Hannaford
+ * The class is used with no alterations to output a program listing
+ * with errors appropriately enumerated.
  */
 import java.io.*;
 
@@ -16,7 +18,12 @@ public class OutputController {
     private String currLine = null;
     private String errLine = null;
 
-
+/**
+ * Instantiates an OutputController object to allow printing of the program
+ * listing.
+ * @param l a PrintWriter object to output the listing
+ * @param e a StringBuiffer object to hold a string for each program line
+ */
     public OutputController(PrintWriter l, StringBuffer e) {
         listing = l;		// copy the file references to local attributes
         err = e;

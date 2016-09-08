@@ -176,8 +176,7 @@ public class InputController {
         counter = counter+length;
         if(prt.value()==TokId.TUNDF){
             System.out.println();
-            System.out.print(s+"\n");
-            
+            System.out.print(s);
             counter=0;
         }else if(counter>60){
             System.out.println(s);
@@ -340,8 +339,6 @@ public class InputController {
                                     isValid=true;// it's a valid == operator
                                 }else{
                                     state.setState(StateEnum.UNDEF);// =  by itself is undefined
-                                    val = value;//put the current token in a buffer
-                                    unflag = true;
                                 }
                                 break;
                             case 47:// the "/" operator
@@ -358,7 +355,6 @@ public class InputController {
                             default:
                                 if(!delims.contains(value)){// if the value is not a vaild single operator
                                     state.setState(StateEnum.UNDEF);
-                                    unflag = true;
                                 }else{
                                     isValid = true;//allow a token to be created
                                     val=0;

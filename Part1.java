@@ -8,25 +8,17 @@ import java.io.*;
  * the InputController object(Scanner) to begin scanning characters
  */
 public class Part1 {
-    private static PrintWriter l;
-    private static StringBuffer buff;
-    private File file;
-    private static FileReader srcFile;
-    private static TreeNode root;
+    
     public static void main(String[] args){
         System.out.println("Scanning New File:");
         try{
-            srcFile = new FileReader("src/Compiler/"+args[0]);
-            InputController sc = new InputController(srcFile);
-            OutputController oc = new OutputController(l, buff);
-            //Parser p = new Parser(sc, oc);
-            //root = p.recursiveDescent();
+            FileReader f = new FileReader("src/Compiler/"+args[0]);
+            InputController sc = new InputController(f);
             
             while(!sc.getEof()){
                 Token t = sc.getToken();
                 if(t!=null){
                     sc.printToken(t);
-                    
                 }
                 if(sc.getEof()){
                     t = sc.getToken();

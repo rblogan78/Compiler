@@ -10,7 +10,7 @@ public class TreeNode {
     private Node nodeValue;
     private int idx;
     private TreeNode left,middle,right;
-    private StRec name, type;
+    private StRec name, type;//symbol table record
 
     public TreeNode () {
             nodeValue = Node.NUNDEF;

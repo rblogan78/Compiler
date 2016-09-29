@@ -285,7 +285,8 @@ public class Parser {
         TokId val = currentToken.value();
         switch(val){
             case TREPT:
-                
+                currentToken = this.getNextToken();
+                stats.setLeft(repeat());
                 break;
             case TIDNT:
                 TreeNode n = createNode(Node.NUNDEF);//could be an <asgnstat> or a <callstat> 
@@ -298,12 +299,31 @@ public class Parser {
                     n.setLeft(call());
                 }else{
                     n.setLeft(asgn());
-                    
                 }
                 break;
             case TINKW:
+                currentToken = this.getNextToken();
+                if(currentToken.value()!=TokId.TINPT){
+                    System.out.println("Unexpected Token");
+                }else{
+                    currentToken = this.getNextToken();
+                    stats.setLeft(vlist());
+                }
                 break;
             case TOUTP:
+                currentToken = this.getNextToken();
+                if(currentToken.value()!=TokId.TASGN){
+                    System.out.println("Unexpected Token");
+                }else{
+                    currentToken = this.getNextToken();
+                    if(currentToken.value()==TokId.TOUTL){
+                        TreeNode outl = createNode(Node.NOUTL);
+                        currentToken = this.getNextToken();
+                        break;
+                    }else{
+                        
+                    }
+                }
                 break;
             case TRETN:
                 currentToken = this.getNextToken();
@@ -335,7 +355,20 @@ public class Parser {
         }
         return asgn;
     }
-
+    
+    private TreeNode vlist(){
+        TreeNode vlist = createNode(Node.NVLIST);
+        currentToken = this.getNextToken();
+        vlist.setLeft(var());
+        currentToken = this.getNextToken();
+        if (currentToken.value()==TokId.TCOMA){
+            currentToken = this.getNextToken();
+            vlist.setRight(vlist());
+        }
+        
+        return vlist;
+    }
+    
     private TreeNode var(){
         TreeNode var = createNode(Node.NUNDEF);
         if(currentToken.value()==TokId.TASGN){
@@ -361,9 +394,29 @@ public class Parser {
         return var;
     }
     
-    //private TreeNode repeat(){
-        
-    //}
+    private TreeNode repeat(){
+        TreeNode rpt = createNode(Node.NREPT);
+        if(currentToken.value()==TokId.TRPAR){
+            //do nothing
+        }else{
+            currentToken = this.getNextToken();
+            rpt.setLeft(alist());
+        }
+        rpt.setMiddle(stats());
+        if(currentToken.value()!=TokId.TUNTL){
+            System.out.println("Unexpected token");
+        }else{
+            //currentToken = this.getNextToken();
+            rpt.setRight(bool());
+        }
+        return rpt;
+    }
+    
+    private TreeNode alist(){
+        TreeNode alist = createNode(Node.NASGNS);
+        alist.setLeft(asgn());
+        return alist;
+    }
     
     private TreeNode call(){
         TreeNode expl = createNode(Node.NEXPL);
@@ -391,9 +444,99 @@ public class Parser {
     }
     
     private TreeNode bool(){
-        TreeNode bool = createNode(Node.NUNDEF);
+        TreeNode bool = createNode(Node.NBOOL);
+        currentToken = this.getNextToken();
+        bool.setLeft(rel());
+        currentToken = this.getNextToken();
+        switch(currentToken.value()){
+            case TANDK:
+                bool.setValue(Node.NAND);
+                currentToken = this.getNextToken();
+                bool.setRight(rel());
+                break;
+            case TORKW:
+                bool.setValue(Node.NOR);
+                currentToken = this.getNextToken();
+                bool.setRight(rel());
+                break;
+            case TXORK:
+                bool.setValue(Node.NXOR);
+                currentToken = this.getNextToken();
+                bool.setRight(rel());
+                break;
+            default:
+                break;
+        }
         
         return bool;
+    }
+    
+    private TreeNode rel(){
+        boolean flag = false;
+        TreeNode rel = createNode(Node.NUNDEF);
+        if(currentToken.value()==TokId.TNOTK){
+            currentToken = this.getNextToken();
+            rel.setValue(Node.NNOT);
+            flag = true;
+        }
+        rel.setLeft(expression());
+        currentToken = this.getNextToken();
+        switch(currentToken.value()){
+            case TDEQL:
+                if(flag){
+                    TreeNode r = createNode(Node.NEQL);
+                    rel.setLeft(r);
+                }else{
+                    rel.setValue(Node.NEQL);
+                }
+                break;
+            case TNEQL:
+                if(flag){
+                    TreeNode r = createNode(Node.NNEQ);
+                    rel.setLeft(r);
+                }else{
+                    rel.setValue(Node.NNEQ);
+                }
+                break;
+            case TGRTR:
+                if(flag){
+                    TreeNode r = createNode(Node.NGRT);
+                    rel.setLeft(r);
+                }else{
+                    rel.setValue(Node.NGRT);
+                }
+                break;
+            case TLEQL:
+                if(flag){
+                    TreeNode r = createNode(Node.NLEQ);
+                    rel.setLeft(r);
+                }else{
+                    rel.setValue(Node.NLEQ);
+                }
+                break;
+            case TLESS:
+                if(flag){
+                    TreeNode r = createNode(Node.NLSS);
+                    rel.setLeft(r);
+                }else{
+                    rel.setValue(Node.NLSS);
+                }
+                break;
+            case TGREQ:
+                if(flag){
+                    TreeNode r = createNode(Node.NGEQ);
+                    rel.setLeft(r);
+                }else{
+                    rel.setValue(Node.NGEQ);
+                }
+                break;
+            default:
+                return rel;
+        }
+        currentToken = this.getNextToken();
+        rel.setRight(expression());
+        
+        return rel;
     }
     
     private TreeNode mbody(){

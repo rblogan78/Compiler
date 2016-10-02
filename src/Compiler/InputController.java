@@ -266,6 +266,7 @@ public class InputController {
                         if(!Character.isLetterOrDigit(value)){//the identifier is delimited 
                             isValid = true;                  //by anything other than a letter or digit
                             val = value;
+                            d = true;
                             break;
                         }
                     }
@@ -397,7 +398,7 @@ public class InputController {
                         isValid = true;
                         c = (char)value;
                         tok.add(c);
-                        while(((value=this.getVal())!=13) && value!=-1){
+                        while(((value=this.getVal())!=13) && value!=-1 && value!=10){
                             c = (char)value;
                             tok.add(c);
                         }

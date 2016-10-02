@@ -56,6 +56,8 @@ public class TreeNode {
     public StRec getName() { return name; }
 
     public StRec getType() { return type; }
+    
+    public int getIndex() { return idx; }
 
     public void setValue(Node value) { nodeValue = value; }
 

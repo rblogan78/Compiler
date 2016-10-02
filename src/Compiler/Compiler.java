@@ -34,11 +34,21 @@ public class Compiler {
                 case "part3":
                     Parser p = new Parser(sc, oc);
                     root = p.recursiveDescent();
+                    prePrint(root);
                     break;
             }
             sc.closeWriter();
         } catch(FileNotFoundException e){
             System.out.println(e);
+        }
+    }
+    
+    private static void prePrint(TreeNode root){
+        if(root!=null){
+            System.out.print(root.getValue()+" "+root.getIndex()+"\n");
+            prePrint(root.getLeft());
+            prePrint(root.getMiddle());
+            prePrint(root.getRight());
         }
     }
 }

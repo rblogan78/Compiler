@@ -1,0 +1,19 @@
+CD16 Ex1
+constants  xx is 3,  yy is 5,  zz is 12
+types
+	Point is x: integer, y: integer end
+	Polygon is array [zz] of Point
+arrays
+	a:Polygon, b:Polygon
+func f1 (aa:Polygon, bb:Polygon) : boolean
+	cc:integer, dd:integer
+	begin
+		/-- Do something
+		return true;
+	end
+main
+	ee:integer, ff: real
+begin
+		/-- Do something else
+
+end CD16 Ex1

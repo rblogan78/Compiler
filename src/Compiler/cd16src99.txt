@@ -65,8 +65,6 @@ begin
 
 	Zeroes(ZZ);
 
-	Out << "  ", 2;
-
 	Print(ZZ);
 
 	Out << Line;

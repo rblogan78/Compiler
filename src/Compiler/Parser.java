@@ -320,6 +320,9 @@ public class Parser {
                         break;
                     }else{
                         stats.setLeft(prList());
+                        if(currentToken.value()==TokId.TSEMI){
+                            break;
+                        }
                         if(currentToken.value()!=TokId.TASGN){
                             System.out.println("Unexpected Token - '<<'");
                         }else{
@@ -409,6 +412,7 @@ public class Parser {
         TreeNode prlist = createNode(Node.NPRLST);
         prlist.setLeft(prItem());
         if(currentToken.value()==TokId.TCOMA){
+            currentToken = this.getNextToken();
             prlist.setRight(prList());
         }
         return prlist;
@@ -639,6 +643,10 @@ public class Parser {
             System.out.println("Missing token 'begin'");
         }
         main.setRight(stats());
+        if(currentToken.value()!=TokId.TENDK){
+            System.out.println("Missing token 'end'");
+        }
+        currentToken = this.getNextToken();
         if(currentToken.value()!=TokId.TCD16){
             System.out.println("Missing token 'CD16'");
         }
@@ -698,7 +706,7 @@ public class Parser {
         currentToken = this.getNextToken();
         if(currentToken.value()==TokId.TCOMA){
             alist.setRight(arrays());
-        }else if(currentToken.value()!=TokId.TFUNC){
+        }else if((currentToken.value()!=TokId.TFUNC) && (currentToken.value()!=TokId.TMAIN)){
             System.out.println("Unexpected Token - 'func'");
         }
         return alist;

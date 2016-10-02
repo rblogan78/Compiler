@@ -1,0 +1,60 @@
+  1: /--
+  2: /-- CD16 Example Program - Exercise 98
+  3: /--
+  4: /-- This program does not use procedures and so may be useful
+  5: /-- for testing the preliminary versions of your compiler.
+  6: /--
+  7: /-- You will also be able to modify it to have a couple of
+  8: /-- elementary procedures for testing of advanced sections.
+  9: /--
+ 10: /-- M. Hannaford
+ 11: /-- 05-Aug-2015
+ 12: /--
+ 13: 
+ 14: CD16 ex98
+ 15: 
+ 16: constants    size is 500, limit is 32
+ 17: 
+ 18: types
+ 19: 	XX is x:integer, y:integer end
+ 20: 	YY is array[size] of XX
+ 21: 
+ 22: arrays	ZZ : YY
+ 23: 
+ 24: main
+ 25: 	i:integer, j:integer, k:integer
+ 26: begin
+ 27: 
+ 28:     for (i << 0; i<size)
+ 29:         ZZ[i].x << 1;
+ 30:         i << i+1;
+ 31:     end
+ 32: 
+ 33:     for (i << 0; i<limit)
+ 34:         if (ZZ[i].x != 0)
+ 35:             k << 2*i+3;
+ 36:             for (j << i+k; j<limit)
+ 37:                 ZZ[j].x << 0;
+ 38:                 j << j+k;
+ 39:             end
+ 40:         end
+ 41:         i << i+1;
+ 42:     end
+ 43: 
+ 44:     Out << "  ", 2;
+ 45: 
+ 46:     for (k << 1, i << 0; i<size)
+ 47:         if (ZZ[i].x == 1)
+ 48:             j << 2*i+3;
+ 49:             if (j < 100) Out << " "; end
+ 50:             if (j <  10) Out << " "; end
+ 51:             Out << j;
+ 52:             k << k+1;
+ 53:             if (k % 10 == 0) Out << Line; end
+ 54:         end
+ 55:         i << i+1;
+ 56:     end
+ 57: 
+ 58:     Out << Line;
+ 59: 
+ 60: end CD16 ex98

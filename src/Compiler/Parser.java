@@ -286,6 +286,7 @@ public class Parser {
                 switch(currentToken.value()){
                     case TLPAR:
                         temp.setValue(Node.NCALL);
+                        
                         temp.setLeft(call());
                         break;
                     case TASGN:
@@ -387,9 +388,7 @@ public class Parser {
     
     private TreeNode var(){
         TreeNode var = createNode(Node.NUNDEF);
-        if(currentToken.value()==TokId.TASGN || currentToken.value()==TokId.TRBRK || currentToken.value()==TokId.TLESS){
-            var.setValue(Node.NSIMV);
-        }else if(currentToken.value()==TokId.TLBRK){
+        if(currentToken.value()==TokId.TLBRK){
             currentToken = this.getNextToken();
             var.setLeft(expression());
             if(currentToken.value()!=TokId.TDOTT){
@@ -404,6 +403,8 @@ public class Parser {
                     currentToken = this.getNextToken();
                 }
             }
+        }else{
+            var.setValue(Node.NSIMV);
         }
         return var;
     }
@@ -517,17 +518,15 @@ public class Parser {
     
     private TreeNode call(){
         TreeNode expl = createNode(Node.NEXPL);
-        currentToken = this.getNextToken();
-        if (currentToken.value()==TokId.TRPAR){
-            //do nothing 
-        }else{
+        //currentToken = this.getNextToken();
+        
             expl.setLeft(elist());
             if(currentToken.value()!=TokId.TRPAR){
                 System.out.println("Unexpected Token - ')' required");
             }else{
                 currentToken = this.getNextToken();
             }
-        }
+        
         return expl;
     }
     
@@ -736,46 +735,52 @@ public class Parser {
         if(currentToken.value()==TokId.TCOMA){
             return term;    
         }
-        TreeNode expr = createNode(Node.NUNDEF);
-        switch(currentToken.value()){
+        TokId tok = currentToken.value();      
+        switch(tok){
             case TADDT:
-                expr.setValue(Node.NADD);
+                TreeNode exAdd = createNode(Node.NADD);
                 currentToken = this.getNextToken();
-                break;
+                exAdd.setLeft(term);
+                exAdd.setRight(expression());
+                return exAdd;
             case TSUBT:
-                expr.setValue(Node.NSUB);
+                TreeNode exSub = createNode(Node.NSUB);
                 currentToken = this.getNextToken();
-                break;
+                exSub.setLeft(term);
+                exSub.setRight(expression());
+                return exSub;
             case TMULT:
-                expr.setValue(Node.NMUL);
+                TreeNode exMul = createNode(Node.NMUL);
                 currentToken = this.getNextToken();
-                break;
+                exMul.setLeft(term);
+                exMul.setRight(expression());
+                return exMul;
             case TDIVT:
-                expr.setValue(Node.NDIV);
+                TreeNode exDiv = createNode(Node.NDIV);
                 currentToken = this.getNextToken();
-                break;
+                exDiv.setLeft(term);
+                exDiv.setRight(expression());
+                return exDiv;
             case TPERC:
-                expr.setValue(Node.NMOD);
+                TreeNode exMod = createNode(Node.NMOD);
                 currentToken = this.getNextToken();
-                break;
+                exMod.setLeft(term);
+                exMod.setRight(expression());
+                return exMod;
             case TCART:
-                expr.setValue(Node.NPOW);
+                TreeNode exPow = createNode(Node.NPOW);
                 currentToken = this.getNextToken();
-                break;
+                exPow.setLeft(term);
+                exPow.setRight(expression());
+                return exPow;
             case TRBRK:
                 currentToken = this.getNextToken();
                 return term;
             default:
                 return term;
         }
-        expr.setLeft(term);
-        expr.setRight(expression());
-        return expr;
     }
    
-    //private TreeNode exprTail(){
-        
-    //}
     private TreeNode term(){
         return factor();
     }
@@ -789,13 +794,15 @@ public class Parser {
         TokId val = currentToken.value();
         switch(val){
             case TIDNT:
-                expon.setName(createSymbolRec(currentToken.getStr(), currentToken.value()));
+                StRec sym = createSymbolRec(currentToken.getStr(), currentToken.value());
                 currentToken = this.getNextToken();
                 if(currentToken.value()==TokId.TLPAR){
+                    expon.setName(sym);
                     expon.setValue(Node.NFCALL);
                     expon.setLeft(call());
                 }else{
                     expon = var();
+                    expon.setName(sym);
                 }
                 break;
             case TILIT:

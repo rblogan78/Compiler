@@ -10,6 +10,7 @@ import java.util.*;
 public class Parser {
     private InputController scanner;
     private OutputController out;
+    private ErrorHandler eh;
     private Token currentToken;
     private TreeNode root;
     private HashMap<String,StRec>[] sTable;
@@ -18,13 +19,13 @@ public class Parser {
     public Parser(InputController sc, OutputController oc){
         scanner = sc;//copy to local variables
         out = oc;
+        eh = new ErrorHandler(scanner);
         currentToken = null;
         root = createNode(Node.NPROG); //create the top level node
         sTable = new HashMap[NUMARRAYS];
         for (int i=0;i<NUMARRAYS;i++){
             sTable[i] = new HashMap<>();
         } 
-        //sTable[0] = HashMap<String, StRec> sTable = new HashMap<>();
     }
     
     public TreeNode recursiveDescent(){
@@ -75,14 +76,13 @@ public class Parser {
             System.out.println("Unexpected Token - 'CD16'");
         }else{
            currentToken= this.getNextToken();
-           //token =currentToken.value();
         }
         if (currentToken.value()!=TokId.TIDNT){
             System.out.println("Unexpected Token - 'Program name'");
         }else{
             //put the current token into the symbol table
             root.setName(createSymbolRec(currentToken.getStr(),currentToken.value()));
-           currentToken= this.getNextToken();//and get next valid token
+            currentToken= this.getNextToken();//and get next valid token
         }
         if(currentToken.value()==TokId.TCONS||currentToken.value()==TokId.TTYPS||currentToken.value()==TokId.TARRS){
             root.setLeft(globals());
@@ -137,8 +137,8 @@ public class Parser {
             TreeNode left = createNode(Node.NFUND);
             funcs.setLeft(left);//create the NFUND Node (left)
             left.setName(createSymbolRec(currentToken.getStr(),currentToken.value()));//put the identifier (name of function) into the NFUND Node
-            currentToken = this.getNextToken();//check for a left paren - else error
-            if(currentToken.value()!=TokId.TLPAR){
+            currentToken = this.getNextToken();
+            if(currentToken.value()!=TokId.TLPAR){//check for a left paren - else error
                 System.out.println("Unexpected Token - '('");
             }else{
                 currentToken = this.getNextToken();
@@ -267,90 +267,103 @@ public class Parser {
     }
     
     private TreeNode stats(){
+        boolean flag = true;
         TreeNode stats = createNode(Node.NSTATS);
         currentToken = this.getNextToken();
         TokId val = currentToken.value();
-        switch(val){
-            case TREPT:
-                currentToken = this.getNextToken();
-                stats.setLeft(repeat());
-                break;
-            case TENDK:
-                return stats;
-            case TIDNT:
-                TreeNode temp = createNode(Node.NUNDEF);//could be an <asgnstat> or a <callstat> 
-                stats.setLeft(temp);
-                StRec s = createSymbolRec(currentToken.getStr(),currentToken.value());//the <id>
-                temp.setName(s);
-                currentToken = this.getNextToken();//
-                switch(currentToken.value()){
-                    case TLPAR:
-                        temp.setValue(Node.NCALL);
-                        
-                        temp.setLeft(call());
-                        break;
-                    case TASGN:
-                        temp.setValue(Node.NASGN);
-                        
-                        temp.setLeft(bool());
-                        break;
-                    default:
-                        temp.setLeft(asgn());
-                        break;
-                }
-                break;
-            case TINKW:
-                currentToken = this.getNextToken();
-                if(currentToken.value()!=TokId.TINPT){
-                    System.out.println("Unexpected Token - '>>'");
-                }else{
+        while(flag){
+            switch(val){
+                case TREPT:
                     currentToken = this.getNextToken();
-                    stats.setLeft(vlist());
-                }
-                break;
-            case TOUTP:
-                currentToken = this.getNextToken();
-                if(currentToken.value()!=TokId.TASGN){
-                    System.out.println("Unexpected Token - '<<'");
-                }else{
-                    currentToken = this.getNextToken();
-                    if(currentToken.value()==TokId.TOUTL){
-                        TreeNode outl = createNode(Node.NOUTL);
-                        stats.setLeft(outl);
-                        currentToken = this.getNextToken();
-                        break;
-                    }else{
-                        stats.setLeft(prList());
-                        if(currentToken.value()==TokId.TSEMI){
+                    stats.setLeft(repeat());
+                    flag = false;
+                    break;
+                case TENDK:
+                    flag = false;
+                    return stats;
+                case TIDNT:
+                    flag = false;
+                    TreeNode temp = createNode(Node.NUNDEF);//could be an <asgnstat> or a <callstat> 
+                    stats.setLeft(temp);
+                    StRec s = createSymbolRec(currentToken.getStr(),currentToken.value());//the <id>
+                    temp.setName(s);
+                    currentToken = this.getNextToken();//
+                    switch(currentToken.value()){
+                        case TLPAR:
+                            temp.setValue(Node.NCALL);
+
+                            temp.setLeft(call());
                             break;
-                        }
-                        if(currentToken.value()!=TokId.TASGN){
-                            System.out.println("Unexpected Token - '<<'");
+                        case TASGN:
+                            temp.setValue(Node.NASGN);
+
+                            temp.setLeft(bool());
+                            break;
+                        default:
+                            temp.setLeft(asgn());
+                            break;
+                    }
+                    break;
+                case TINKW:
+                    flag = false;
+                    currentToken = this.getNextToken();
+                    if(currentToken.value()!=TokId.TINPT){
+                        System.out.println("Unexpected Token - '>>'");
+                    }else{
+                        currentToken = this.getNextToken();
+                        stats.setLeft(vlist());
+                    }
+                    break;
+                case TOUTP:
+                    flag = false;
+                    currentToken = this.getNextToken();
+                    if(currentToken.value()!=TokId.TASGN){
+                        System.out.println("Unexpected Token - '<<'");
+                    }else{
+                        currentToken = this.getNextToken();
+                        if(currentToken.value()==TokId.TOUTL){
+                            TreeNode outl = createNode(Node.NOUTL);
+                            stats.setLeft(outl);
+                            currentToken = this.getNextToken();
+                            break;
                         }else{
-                            currentToken = this.getNextToken();
-                            if(currentToken.value()!=TokId.TOUTL){
-                                System.out.println("Unexpected Token - 'Line'");
+                            stats.setLeft(prList());
+                            if(currentToken.value()==TokId.TSEMI){
+                                break;
                             }
-                            currentToken = this.getNextToken();
+                            if(currentToken.value()!=TokId.TASGN){
+                                System.out.println("Unexpected Token - '<<'");
+                            }else{
+                                currentToken = this.getNextToken();
+                                if(currentToken.value()!=TokId.TOUTL){
+                                    System.out.println("Unexpected Token - 'Line'");
+                                }
+                                currentToken = this.getNextToken();
+                            }
                         }
                     }
-                }
-                break;
-            case TRETN:
-                currentToken = this.getNextToken();
-                if(currentToken.value()!=TokId.TSEMI){
-                    stats.setLeft(expression());
-                }
-                break;
-            case TFORK:
-                stats.setLeft(forstat());
-                break;
-            case TIFKW:
-                stats.setLeft(ifstat());
-                break;
-            default:
-                System.out.println("Unexpected Token - start of statement");
-                break;
+                    break;
+                case TRETN:
+                    flag = false;
+                    currentToken = this.getNextToken();
+                    if(currentToken.value()!=TokId.TSEMI){
+                        stats.setLeft(expression());
+                    }
+                    break;
+                case TFORK:
+                    flag = false;
+                    stats.setLeft(forstat());
+                    break;
+                case TIFKW:
+                    flag = false;
+                    stats.setLeft(ifstat());
+                    break;
+                default:
+                    Error e = eh.createError("Illegal start of statement", "Parse Error", currentToken.getLn(), currentToken.getPos());
+                    currentToken = eh.handleError(e, "stats", currentToken);
+                    val = currentToken.value();
+                    break;
+            }
         }
         if(currentToken.value()==TokId.TSEMI || currentToken.value()==TokId.TENDK){
             stats.setRight(stats());//recursive call

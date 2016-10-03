@@ -31,7 +31,7 @@ public class InputController {
     private OutputController out;
     
         public InputController(FileReader f){
-        file = new File("P1Output.txt");
+        file = new File("ProgamListing.txt");
         try{
             l = new PrintWriter(file);
         }catch(FileNotFoundException e){

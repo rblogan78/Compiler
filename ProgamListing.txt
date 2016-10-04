@@ -1,0 +1,74 @@
+  1: /--
+  2: /-- CD16 Example Program - Exercise 99
+  3: /-- 
+  4: /-- This program is exactly the same as Ex98 but DOES use procedures and so
+  5: /--   may be useful for testing the later versions of your compiler.
+  6: /--
+  7: /-- M. Hannaford
+  8: /-- 05-Aug-2015
+  9: /--
+ 10: 
+ 11: CD16 ex99
+ 12: constants    size is 500, limit is 32
+ 13: types
+ 14: 	XX is x:integer, y:integer end
+ 15: 	YY is array[size] of XX
+ 16: arrays	ZZ : YY
+ 17: 
+ 18: func Ones(zz:YY) : void
+ 19: 	i : integer
+ 20: begin
+ 21: 	for (i << 0; i<size)
+ 22:         	/zz[i].x << 1;
+ 23:         	i << i+1;
+ 24: 	end
+ 25: 	return;
+ 26: end
+ 27: 
+ 28: func Zeroes(zz:YY) : void
+ 29: 	i:integer, j:integer, k:integer
+ 30: begin
+ 31: 	for (i << 0; i<limit)
+ 32:             if (ZZ[i].x != 0)
+ 33:         	k << 2*i+3;
+ 34:         	for (j << i+k; j<limit)
+ 35:                     ZZ[j].x << 0;
+ 36:                     j << j+k;
+ 37:         	end
+ 38:             end
+ 39:             i << i+1;
+ 40: 	end
+ 41: 	return;
+ 42: end
+ 43: 
+ 44: func Print(const zz:YY) : void
+ 45: 	i:integer, j:integer, k:integer
+ 46: begin
+ 47: 	for (k << 1, i << 0; i<size)
+ 48:             if (ZZ[i].x == 1)
+ 49:         	j << 2*i+3;
+ 50:         	if (j < 100) Out << " "; end
+ 51:         	if (j <  10) Out << " "; end
+ 52:         	Out << j;
+ 53:         	k << k+1;
+ 54:         	if (k % 10 == 0) Out << Line; end
+ 55:             end
+ 56:         i << i+1;
+ 57: 	end
+ 58: 	return;
+ 59: end
+ 60: 
+ 61: main
+ 62: 	i:integer	/-- unused, required by syntax
+ 63: begin
+ 64: 	Ones(ZZ);
+ 65: 
+ 66: 	Zeroes(ZZ);
+ 67: 
+ 68:         Out << "  ", 2;
+ 69: 
+ 70: 	Print(ZZ);
+ 71: 
+ 72: 	Out << Line;
+ 73: 
+ 74: end CD16 ex99

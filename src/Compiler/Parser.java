@@ -13,7 +13,7 @@ public class Parser {
     private ErrorHandler eh;
     private Token currentToken;
     private TreeNode root;
-    private HashMap<String,StRec>[] sTable;
+    List<Map<String,StRec>> sTable;
     private final int NUMARRAYS = 4;
     
     public Parser(InputController sc, OutputController oc){
@@ -22,9 +22,10 @@ public class Parser {
         eh = new ErrorHandler(scanner);
         currentToken = null;
         root = createNode(Node.NPROG); //create the top level node
-        sTable = new HashMap[NUMARRAYS];
-        for (int i=0;i<NUMARRAYS;i++){
-            sTable[i] = new HashMap<>();
+        sTable = new ArrayList<>();
+        sTable.add(new HashMap<>());
+        for (int i=1;i<NUMARRAYS;i++){
+            sTable.add(new HashMap<>());
         } 
     }
     
@@ -56,16 +57,16 @@ public class Parser {
         StRec s = new StRec(tknStr);
         switch(type){
             case TIDNT:
-                sTable[1].put(tknStr, s);
+                sTable.get(1).put(tknStr, s);
                 break;
             case TILIT:
-                sTable[0].put(tknStr, s);
+                sTable.get(0).put(tknStr, s);
                 break;
             case TFLIT:
-                sTable[0].put(tknStr, s);
+                sTable.get(0).put(tknStr, s);
                 break;
             case TSTRG:
-                sTable[2].put(tknStr, s);
+                sTable.get(2).put(tknStr, s);
                 break;
         }
         return s;
